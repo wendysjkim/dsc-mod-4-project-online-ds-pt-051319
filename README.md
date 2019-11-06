@@ -1,100 +1,73 @@
 
-# Module 4 -  Final Project Specifications
+# Module 4 Final Project 
+# ARIMA Modeling: Real Estate Investment Recommendations
 
-## Introduction
-
-In this lesson, we'll review all the guidelines and specifications for the final project for Module 4.
-
-## Objectives
-
-* Understand all required aspects of the Final Project for Module 4
-* Understand all required deliverables
-* Understand what constitutes a successful project
-
-### Final Project Summary
-
-Another module down--you're absolutely crushing it! For this project, you'll get to flex your **_Time-Series_** muscles!
-
-<img src='https://raw.githubusercontent.com/learn-co-curriculum/dsc-mod-4-project/master/images/timegif.gif'>
-
-For this module's final project, we're going to put your newfound **_Time Series Analysis_** skills to the test. You will be forecasting real estate prices of various zipcodes using data from [Zillow](https://www.zillow.com/research/data/). However, this won't be as straightforward as just running a time-series analysis--you're going to have to make some data-driven decisions and think critically along the way!
-
-### The Project
-
-For this project, you will be acting as a consultant for a fictional real-estate investment firm. The firm has asked you what seems like a simple question:
+For this project, I tried to answer a seemingly question:
 
 > what are the top 5 best zipcodes for us to invest in?
 
-This may seem like a simple question at first glance, but there's more than a little ambiguity here that you'll have to think through in order to provide a solid recommendation. Should your recommendation be focused on profit margins only? What about risk? What sort of time horizon are you predicting against?  Your recommendation will need to detail your rationale and answer any sort of lingering questions like these in order to demonstrate how you define "best".
+I analyzed zipcode-level median housing sales data from Zillowe [Zillow Research Page](https://www.zillow.com/research/data/). found in the file `zillow_data.csv`. I used ARIMA modeling to identify 5 zipcodes with highest predicted rate of returns in the three biggest cities (by number of zipcodes). The work is found in the file `analysis.ipynb`.
 
-As mentioned previously, the data you'll be working with comes from the [Zillow Research Page](https://www.zillow.com/research/data/). However, there are many options on that page, and making sure you have exactly what you need can be a bit confusing. For simplicity's sake, we have already provided the dataset for you in this repo--you will find it in the file `zillow_data.csv`.
+There were 14,723 zipcodes in total. I focused on top 3 cities with the most number of zipcodes. The top 3 cities with the most number of zipcodes are New York, Los Angeles and Houston. The data is consistent with [the population size](http://worldpopulationreview.com/us-cities/) of each city.
 
-## The Deliverables
+> Largest Cities in the US by Population (2019)
+> * New York City, NY (Population: 8,601,186)
+> * Los Angeles, CA (Population: 4,057,841)
+> * Chicago, IL (Population: 2,679,044)
+> * Houston, TX (Population: 2,359,480)
 
-The goal of this project is to have you complete a very common real-world task in regard to Time-Series Modeling. However, real world problems often come with a significant degree of ambiguity, which requires you to use your knowledge of statistics and data science to think critically about and answer. While the main task in this project is Time-Series Modeling, that isn't the overall goal--it is important to understand that Time-Series Modeling is a tool in your toolbox, and the forecasts it provides you are what you'll use to answer important questions.
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/0.%20Zipcode%20Count.png'>
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/1.%20Top%203%20Bubble.png'>
+  
+I further filtered down the samples sizes to 100 zipcodes, by looking at the growth rates in the past 3 years.
 
-In short, to pass this project, demonstrating the quality and thoughtfulness of your overall recommendation is at least as important as successfully building a Time-Series model!
+## EDA and Visualizations
+There were 4 outliers in NYC whose prices were significantly higher than the rest of the regions. More interestingly, these zipcodes didn’t seem to be affected by the 2008 financial crisis. Rather, their median housing sales value increased.
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/2.%20Top%203%20Price.png'>
 
-Online students should complete the following 4 deliverables for this project:
+These 4 outliers are located in Manhattan:
 
-* A well-documented **_Jupyter Notebook_** containing any code you've written for this project (use the notebook in this repo, `mod_4_starter_notebook.ipynb`). This work will need to be pushed to your GitHub repository in order to submit your project.
-* An organized **README.md** file in the GitHub repository that describes the contents of the repository. This file should be the source of information for navigating through the repository.
-* A **_[Blog post](https://github.com/learn-co-curriculum/dsc-welcome-blogging)_**.
-* An **_'Executive Summary' PowerPoint Presentation_** that explains your rationale and methodology for determining the best zipcodes for investment.
+| Zipcode | Neighborhood  |
+|--------|--------------  |
+| 10128 | Upper East Side | 
+| 10021 | Upper East Side   |
+| 10011 | Chelsea and Clinton | 
+| 10014 | Greenwich Village and Soho| 
 
-Note: On-campus students may have different deliverables, please speak with your instructor.
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/3.%20NY%20Outliers.png'>
 
-### Jupyter Notebook Must-Haves
+After excluding these outliers, the housing price trend seemed much more reasonable.
 
-For this project, you will be provided with a jupyter notebook containing some starter code. If you inspect the zillow dataset file, you'll notice that the datetimes for each sale are the actual column names--this is a format you probably haven't seen before. To ensure that you're not blocked by preprocessing, we've provided some helper functions to help simplify getting the data into the correct format. You're not required to use this notebook or keep it in its current format, but we strongly recommend you consider making use of the helper functions so you can spend your time working on the parts of the project that matter.
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/4.%20Top%203%20Excl.%20Outliers.png'>
 
-#### Organization/Code Cleanliness
+## ARIMA Grid Search
+I ran ARIMA grid search for each zipcode, to identify optimal ARIMA parameters. I selected ARIMA paramters as those with the smallest mean squared errors.
 
-The notebook should be well organized, easy to follow, and code is modularized and commented where appropriate.
+I used SARIMAX with no seasonal order and constant specified. If the constant is specified (i.e. trends=’c’), the results should be the same as using the statsmodels ARIMA funciton. I decided to use SARIMAX without the constant specified after few tries. SARIMAX also has a great method (results.plot_diagnostics) to visaulize the model output. For example,
 
-* Level Up: The notebook contains well-formatted, professional looking markdown cells explaining any substantial code. All functions have docstrings that act as professional-quality documentation.
-* The notebook is written to technical audiences with a way to both understand your approach and reproduce your results. The target audience for this deliverable is other data scientists looking to validate your findings.
-* Data visualizations you create should be clearly labeled and contextualized--that is, they fit with the surrounding code or problems you're trying to solve. No dropping data visualizations randomly around your notebook without any context!
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/5.%2011356%20plot%20diagnostics.png'>
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/6.%2011356%20projection.png'>
 
-#### Findings
+For the 100 fast-growing zip codes I chose, I ran ARIMA grid search with p values of [0, 1, 2, 4, 6, 8, 10] and d & q values of [0, 1, 2]. Since the data is available monthly, I iterated through more p values (up to 10) to capture any sort of seaonality with the AR component of the ARIMA model.
 
-Your notebook should briefly mention the metrics you have defined as "best", so that any readers understand what technical metrics you are trying to optimize for (for instance, risk vs profitability, ROI yield, etc.). You do **not** need to explain or defend your your choices in the notebook--the blog post and executive summary presentation are both better suited to that sort of content. However, the notebook should provide enough context about your definition for "best investment" so that they understand what the code you are writing is trying to solve.
+The ARIMA grid search results are saved in the file `ARIMA_results_range0_2.csv`.
 
-#### Visualizations
+## Results
+Among the top 100 fast-growing zipcodes, I identified 30 zipcodes (10 zipcodes in each city) with the best performing models (i.e. smallest MSEs). Then, I calculated predicted growth rate in 1-year, 3-year and 5-year time periods.
 
-Time-Series Analysis is an area of data science that lends itself well to intuitive data visualizations. Whereas we may not be able to visualize the best choice in a classification or clustering problem with a high-dimensional dataset, that isn't an issue with Time Series data. As such, **_any findings worth mentioning in this problem are probably also worth visualizing_**. Your notebook should make use of data visualizations as appropriate to make your findings obvious to any readers.
+Then, I identified top 5 zipcodes with highest 1-year return on investment. I decided to rely on 1-year ROI, as the uncertainty grows as we go further in the future.
 
-Also, remember that if a visualization is worth creating, then it's also worth taking the extra few minutes to make sure that it is easily understandable and well-formatted. When creating visualizations, make sure that they have:
+> * Top 5 ROI 1 year RegionID : {95984, 61779, 61780, 61781, 62107}
+> * Top 5 ROI 3 years RegionID: {96040, 95983, 95984, 61779, 96028}
+> * Top 5 ROI 5 years RegionID: {96040, 95983, 95984, 61779, 96028}
 
-* A title
-* Clearly labeled X and Y axes, with appropriate scale for each
-* A legend, when necessary
-* No overlapping text that makes it hard to read
-* An intelligent use of color--multiple lines should have different colors and/or symbols to make them easily differentiable to the eye
-* An appropriate amount of information--avoid creating graphs that are "too busy"--for instance, don't create a line graph with 25 different lines on it
-
-<center><img src='images/bad-graph-1.png' height=100% width=100%>
-There's just too much going on in this graph for it to be readable--don't make the same mistake! (<a href='http://genywealth.com/wp-content/uploads/2010/03/line-graph.php_.png'>Source</a>)</center>
-
-### Blog Post Must-Haves
-
-Refer back to the [Blogging Guidelines](https://github.com/learn-co-curriculum/dsc-welcome-blogging) for the technical requirements and blog ideas.
-
-
-### Executive Summary Must-Haves
-
-Your presentation should:
-
-Contain between 5-10 professional quality slides detailing:
-
-* A high-level overview of your methodology and findings, including the 5 zipcodes you recommend investing in
-* A brief explanation of what metrics you defined as "best" in order complete this project
-
-As always, this prresentation should also:
-
-* Take no more than 5 minutes to present
-* Avoid technical jargon and explain results in a clear, actionable way for non-technical audiences.
-
-## Grading Rubric 
-
-Online students can find a PDF of the grading rubric for the project [here](https://github.com/learn-co-curriculum/dsc-mod-4-project/blob/master/module4_project_rubric.pdf). _Note: On-campus students may have different requirements, please speak with your instructor._
+The 5 chosen zipcodes are as follows. Among the 5 zipcodes, 4 are in NY and 1 is in LA. The 1-year ROI is expected to range 10-16%.
+ > * 10303
+ > * 11421 
+ > * 10305
+ > * 90003
+ > * 10304
+ 
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/7.%20Results%20Pred%20Conf.png'>
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/8.%20Results%20Pred.png'>
+<img src='https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/images/9.%20Results%20map.png'>
