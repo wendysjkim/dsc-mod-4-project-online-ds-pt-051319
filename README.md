@@ -2,7 +2,7 @@
 # Module 4 Final Project 
 # ARIMA Modeling: Real Estate Investment Recommendations
 
-For this project, I tried to answer a seemingly question:
+For this project, I tried to answer a seemingly simple question:
 
 > what are the top 5 best zipcodes for us to invest in?
 
