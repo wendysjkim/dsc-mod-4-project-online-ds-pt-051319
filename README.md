@@ -1,6 +1,8 @@
+# Un-Zipped Code: Real Estate Recommendations 
 
-# Module 4 Final Project 
-# ARIMA Modeling: Real Estate Investment Recommendations
+- [Zillow Data](https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/zillow_data.csv)
+- [Jupyter Notebook](https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/Analysis.ipynb)
+- [Summary of Findings (Presentation)](https://github.com/wendysjkim/dsc-mod-4-project-online-ds-pt-051319/blob/work/presentation.pdf)
 
 For this project, I tried to answer a seemingly simple question:
 
